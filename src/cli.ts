@@ -1,15 +1,39 @@
-// src/cli.ts
-import { GitCommitLib } from './index';
+#!/usr/bin/env node
 
-const gitLib = new GitCommitLib();
+import { execSync } from 'child_process';
+import path from 'path';
 
-// Lida com argumentos de linha de comando
-const [,, command] = process.argv;
+const targetDir = '.';
 
-if (command === 'run') {
-  console.log('Starting to add and commit files...');
-  gitLib.addAndCommitFiles();
-  console.log('Finished adding and committing files.');
-} else {
-  console.log('Unknown command. Use "run" to add and commit files.');
+function run() {
+  try {
+    // Navegar para o diretório alvo
+    process.chdir(path.resolve(targetDir));
+
+    let count = 1;
+
+    // Adicionar e comitar arquivos não rastreados
+    const untrackedFiles = execSync('git ls-files --others --exclude-standard').toString().trim().split('\n');
+    untrackedFiles.forEach(file => {
+      if (file) {
+        console.log(`Adding untracked file ${file}`);
+        execSync(`git add "${file}"`);
+        execSync(`git commit -m "commit ${count++} - ${file}"`);
+      }
+    });
+
+    // Adicionar e comitar arquivos modificados
+    const modifiedFiles = execSync('git diff --name-only').toString().trim().split('\n');
+    modifiedFiles.forEach(file => {
+      if (file) {
+        console.log(`Adding modified file ${file}`);
+        execSync(`git add "${file}"`);
+        execSync(`git commit -m "commit ${count++} - ${file}"`);
+      }
+    });
+  } catch (error) {
+    console.error('Error executing commands:', (error as Error).message);
+  }
 }
+
+run();
