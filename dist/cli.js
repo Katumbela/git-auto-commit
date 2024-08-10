@@ -8,6 +8,15 @@ const child_process_1 = require("child_process");
 const path_1 = __importDefault(require("path"));
 const process_1 = require("process");
 const targetDir = '.';
+function getCommitType(status) {
+    if (status === 'A')
+        return 'feat';
+    if (status === 'M')
+        return 'fix';
+    if (status === 'D')
+        return 'chore';
+    return 'chore';
+}
 function run() {
     try {
         process.chdir(path_1.default.resolve(targetDir));
@@ -16,14 +25,17 @@ function run() {
         const args = process_1.argv.slice(2);
         if (args.includes('--all') || args.includes('-a')) {
             console.log('📦 Comitando todos os arquivos de uma vez.');
-            const allFiles = (0, child_process_1.execSync)('git ls-files --others --exclude-standard -o -m').toString().trim().split('\n');
-            allFiles.forEach(file => {
+            const allFiles = (0, child_process_1.execSync)('git status --porcelain').toString().trim().split('\n');
+            allFiles.forEach(line => {
+                const [status, file] = [line.slice(0, 2), line.slice(3)];
+                const commitType = getCommitType(status);
                 if (file) {
                     console.log(`📁 Adicionando arquivo ${file}`);
                     (0, child_process_1.execSync)(`git add "${file}"`);
+                    (0, child_process_1.execSync)(`git commit -m "${commitType}: commit ${count++} - ${file}"`);
+                    console.log(`✅ Arquivo ${file} commitado com sucesso.`);
                 }
             });
-            (0, child_process_1.execSync)(`git commit -m "commit ${count++} - All files"`);
             console.log('✅ Todos os arquivos foram commitados.');
         }
         else {
@@ -35,7 +47,7 @@ function run() {
                 if (file) {
                     console.log(`📁 Adicionando ficheiro não rastreado ${file}`);
                     (0, child_process_1.execSync)(`git add "${file}"`);
-                    (0, child_process_1.execSync)(`git commit -m "commit ${count++} - ${file}"`);
+                    (0, child_process_1.execSync)(`git commit -m "feat: commit ${count++} - ${file}"`);
                     console.log(`✅ Ficheiro não rastreado commitado ${file}`);
                 }
             });
@@ -44,7 +56,7 @@ function run() {
                 if (file) {
                     console.log(`📝 Adicionando ficheiro modificado ${file}`);
                     (0, child_process_1.execSync)(`git add "${file}"`);
-                    (0, child_process_1.execSync)(`git commit -m "commit ${count++} - ${file}"`);
+                    (0, child_process_1.execSync)(`git commit -m "fix: commit ${count++} - ${file}"`);
                     console.log(`✅ Ficheiro modificado commitado ${file}`);
                 }
             });
