@@ -1,4 +1,4 @@
-// src/index.ts
+
 import { execSync } from 'child_process';
 
 export class GitCommitLib {
