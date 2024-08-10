@@ -1,5 +1,4 @@
-Claro! Vou atualizar a documentação do seu pacote para refletir as novas funcionalidades. Aqui está um exemplo de como você pode atualizar o `README.md` e criar uma página básica para o GitHub Pages.
-
+ 
 ### Atualização do `README.md`
 
 ```markdown
@@ -87,6 +86,5 @@ Contribuições são bem-vindas! Sinta-se à vontade para enviar pull requests o
 ## Licença
 
 Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICENSE) para detalhes.
-```
- 
+
  
