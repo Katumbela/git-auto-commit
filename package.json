@@ -1,6 +1,6 @@
 {
   "name": "git-commit-lib",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "A library to add and commit files in a Git repository.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,6 +19,7 @@
     "commit",
     "files"
   ],
+  
   "author": "João Afonso Katombela",
   "license": "ISC",
   "devDependencies": {
@@ -30,6 +31,5 @@
   },
   "dependencies": {
     "git-commit-lib": "^1.0.1"
-  },
-  "private": true
+  }
 }
