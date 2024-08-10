@@ -1,15 +1,38 @@
+#!/usr/bin/env node
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-// src/cli.ts
-const index_1 = require("./index");
-const gitLib = new index_1.GitCommitLib();
-// Lida com argumentos de linha de comando
-const [, , command] = process.argv;
-if (command === 'run') {
-    console.log('Starting to add and commit files...');
-    gitLib.addAndCommitFiles();
-    console.log('Finished adding and committing files.');
+const child_process_1 = require("child_process");
+const path_1 = __importDefault(require("path"));
+const targetDir = '.';
+function run() {
+    try {
+        // Navegar para o diretório alvo
+        process.chdir(path_1.default.resolve(targetDir));
+        let count = 1;
+        // Adicionar e comitar arquivos não rastreados
+        const untrackedFiles = (0, child_process_1.execSync)('git ls-files --others --exclude-standard').toString().trim().split('\n');
+        untrackedFiles.forEach(file => {
+            if (file) {
+                console.log(`Adding untracked file ${file}`);
+                (0, child_process_1.execSync)(`git add "${file}"`);
+                (0, child_process_1.execSync)(`git commit -m "commit ${count++} - ${file}"`);
+            }
+        });
+        // Adicionar e comitar arquivos modificados
+        const modifiedFiles = (0, child_process_1.execSync)('git diff --name-only').toString().trim().split('\n');
+        modifiedFiles.forEach(file => {
+            if (file) {
+                console.log(`Adding modified file ${file}`);
+                (0, child_process_1.execSync)(`git add "${file}"`);
+                (0, child_process_1.execSync)(`git commit -m "commit ${count++} - ${file}"`);
+            }
+        });
+    }
+    catch (error) {
+        console.error('Error executing commands:', error.message);
+    }
 }
-else {
-    console.log('Unknown command. Use "run" to add and commit files.');
-}
+run();
