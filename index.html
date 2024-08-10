@@ -1,65 +1,53 @@
- 
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Git Commit CLI</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        h1, h2 {
-            color: #333;
-        }
-    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Git Commit CLI</h1>
-    <p>A simple command-line tool to automate the process of adding and committing files in a Git repository.</p>
+    <div class="container">
+        <h1 class="mt-5">Git Commit CLI</h1>
+        <p class="lead">Uma ferramenta CLI para adicionar e commitar arquivos não rastreados e modificados em um repositório Git.</p>
 
-    <h2>Features</h2>
-    <ul>
-        <li>Add and commit untracked files</li>
-        <li>Add and commit modified files</li>
-        <li>Add and commit all files</li>
-    </ul>
+        <h2>Instalação</h2>
+        <p>Para instalar o pacote globalmente e usá-lo em qualquer projeto, execute:</p>
+        <pre><code>npm install -g git-commit-lib</code></pre>
+        <p>Ou você pode instalar localmente em um projeto específico e usar com <code>npx</code>:</p>
+        <pre><code>npm install git-commit-lib</code></pre>
 
-    <h2>Installation</h2>
-    <p>You can install the package globally using npm:</p>
-    <pre><code>npm install -g git-commit-lib</code></pre>
+        <h2>Uso</h2>
+        <p>Depois de instalar, você pode usar o comando <code>commit-kat</code> para adicionar e commitar arquivos em seu repositório Git.</p>
 
-    <h2>Usage</h2>
-    <p>After installing the package, you can use the following commands:</p>
-    <ul>
-        <li><code>npx commit-kat add-untracked</code> - Add and commit untracked files</li>
-        <li><code>npx commit-kat add-modified</code> - Add and commit modified files</li>
-        <li><code>npx commit-kat add-and-commit</code> - Add and commit both untracked and modified files</li>
-    </ul>
+        <h3>Comando Básico</h3>
+        <pre><code>npx commit-kat</code></pre>
 
-    <h2>Examples</h2>
-    <p>Adding and Committing Untracked Files:</p>
-    <pre><code>npx commit-kat add-untracked</code></pre>
+        <h3>Flags</h3>
+        <ul>
+            <li><code>--all</code> ou <code>-a</code>: Comita todos os arquivos não rastreados e modificados de uma vez.
+                <pre><code>npx commit-kat --all</code></pre>
+            </li>
+            <li><code>--push</code> ou <code>-p</code>: Comita os arquivos e faz um <code>git push</code> no final.
+                <pre><code>npx commit-kat --push</code></pre>
+            </li>
+            <li><code>--all --push</code> ou <code>-a -p</code>: Comita todos os arquivos de uma vez e faz um <code>git push</code> no final.
+                <pre><code>npx commit-kat --all --push</code></pre>
+            </li>
+        </ul>
 
-    <p>Adding and Committing Modified Files:</p>
-    <pre><code>npx commit-kat add-modified</code></pre>
+        <h2>Autor</h2>
+        <p>João Afonso Katombela<br>
+        <a href="https://www.linkedin.com/in/joao-afonso-katumbela">LinkedIn</a><br>
+        <a href="https://github.com/katumbela">GitHub</a></p>
 
-    <p>Adding and Committing All Files:</p>
-    <pre><code>npx commit-kat add-and-commit</code></pre>
+        <h2>Contribuindo</h2>
+        <p>Contribuições são bem-vindas! Sinta-se à vontade para enviar pull requests ou relatar problemas enviando me uma mensagem ou email.</p>
 
-    <h2>Contributing</h2>
-    <p>If you want to contribute to this project, feel free to open an issue or submit a pull request. Your contributions are always welcome!</p>
-
-    <h2>Author</h2>
-    <p><strong>João Afonso Katumbela</strong></p>
-    <ul>
-        <li><a href="https://www.linkedin.com/in/joao-afonso-katumbela">LinkedIn</a></li>
-        <li><a href="https://github.com/katumbela">GitHub</a></li>
-    </ul>
-
-    <h2>License</h2>
-    <p>This project is licensed under the MIT License. See the <a href="LICENSE">LICENSE</a> file for details.</p>
+        <h2>Licença</h2>
+        <p>Este projeto está licenciado sob a MIT License - veja o arquivo <a href="LICENSE">LICENSE</a> para detalhes.</p>
+    </div>
 </body>
 </html>
+```
