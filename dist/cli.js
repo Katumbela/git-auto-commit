@@ -9,10 +9,8 @@ const path_1 = __importDefault(require("path"));
 const targetDir = '.';
 function run() {
     try {
-        // Navegar para o diretório alvo
         process.chdir(path_1.default.resolve(targetDir));
         let count = 1;
-        // Adicionar e comitar arquivos não rastreados
         const untrackedFiles = (0, child_process_1.execSync)('git ls-files --others --exclude-standard').toString().trim().split('\n');
         untrackedFiles.forEach(file => {
             if (file) {
@@ -21,7 +19,6 @@ function run() {
                 (0, child_process_1.execSync)(`git commit -m "commit ${count++} - ${file}"`);
             }
         });
-        // Adicionar e comitar arquivos modificados
         const modifiedFiles = (0, child_process_1.execSync)('git diff --name-only').toString().trim().split('\n');
         modifiedFiles.forEach(file => {
             if (file) {
