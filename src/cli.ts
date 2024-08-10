@@ -12,8 +12,7 @@ function run() {
 
         let count = 1;
         let pushAfterCommit = false;
-
-        // Check command line arguments
+ 
         const args = argv.slice(2);
         if (args.includes('--all') || args.includes('-a')) {
             console.log('📦 Comitando todos os arquivos de uma vez.');
@@ -27,12 +26,11 @@ function run() {
             execSync(`git commit -m "commit ${count++} - All files"`);
             console.log('✅ Todos os arquivos foram commitados.');
         } else {
-            // Handle --push or -p flag
+            
             if (args.includes('--push') || args.includes('-p')) {
                 pushAfterCommit = true;
             }
-
-            // Add and commit untracked files
+ 
             const untrackedFiles = execSync('git ls-files --others --exclude-standard').toString().trim().split('\n');
             untrackedFiles.forEach(file => {
                 if (file) {
@@ -42,8 +40,7 @@ function run() {
                     console.log(`✅ Ficheiro não rastreado commitado ${file}`);
                 }
             });
-
-            // Add and commit modified files
+ 
             const modifiedFiles = execSync('git diff --name-only').toString().trim().split('\n');
             modifiedFiles.forEach(file => {
                 if (file) {
@@ -53,8 +50,7 @@ function run() {
                     console.log(`✅ Ficheiro modificado commitado ${file}`);
                 }
             });
-
-            // Push changes if --push or -p flag is set
+ 
             if (pushAfterCommit) {
                 console.log('🚀 Enviando alterações para o repositório remoto.');
                 execSync('git push');
