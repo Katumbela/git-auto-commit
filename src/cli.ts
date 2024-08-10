@@ -6,13 +6,11 @@ import path from 'path';
 const targetDir = '.';
 
 function run() {
-  try {
-    // Navegar para o diretório alvo
+  try { 
     process.chdir(path.resolve(targetDir));
 
     let count = 1;
-
-    // Adicionar e comitar arquivos não rastreados
+ 
     const untrackedFiles = execSync('git ls-files --others --exclude-standard').toString().trim().split('\n');
     untrackedFiles.forEach(file => {
       if (file) {
@@ -21,8 +19,7 @@ function run() {
         execSync(`git commit -m "commit ${count++} - ${file}"`);
       }
     });
-
-    // Adicionar e comitar arquivos modificados
+ 
     const modifiedFiles = execSync('git diff --name-only').toString().trim().split('\n');
     modifiedFiles.forEach(file => {
       if (file) {
