@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GitCommitLib = void 0;
-// src/index.ts
 const child_process_1 = require("child_process");
 class GitCommitLib {
     constructor() {
