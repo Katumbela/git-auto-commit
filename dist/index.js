@@ -8,7 +8,9 @@ class GitCommitLib {
         this.count = 1;
     }
     addAndCommitFiles() {
+        console.log('Adding untracked files...');
         this.addUntrackedFiles();
+        console.log('Adding modified files...');
         this.addModifiedFiles();
     }
     testAddUntrackedFiles() {
@@ -20,6 +22,10 @@ class GitCommitLib {
     addUntrackedFiles() {
         try {
             const untrackedFiles = (0, child_process_1.execSync)('git ls-files --others --exclude-standard').toString().trim().split('\n');
+            if (untrackedFiles.length === 0) {
+                console.log('No untracked files to add.');
+                return;
+            }
             untrackedFiles.forEach(file => {
                 if (file) {
                     console.log(`Adding untracked file ${file}`);
@@ -35,6 +41,10 @@ class GitCommitLib {
     addModifiedFiles() {
         try {
             const modifiedFiles = (0, child_process_1.execSync)('git diff --name-only').toString().trim().split('\n');
+            if (modifiedFiles.length === 0) {
+                console.log('No modified files to add.');
+                return;
+            }
             modifiedFiles.forEach(file => {
                 if (file) {
                     console.log(`Adding modified file ${file}`);
