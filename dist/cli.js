@@ -129,9 +129,9 @@ function generateMessageFromDiff(diff, file) {
         messages.push(`Criação de testes unitários no arquivo ${file}`);
     }
     // Se não houver mensagens específicas, considera como alterações gerais ou refatoração
-    if (messages.length === 0) {
-        messages.push(`Alterações gerais ou refatoração no arquivo ${file}`);
-    }
+    /* if (messages.length === 0) {
+         messages.push(`Alterações gerais ou refatoração no arquivo ${file}`);
+     }*/
     return messages.join('; ');
 }
 function run() {
