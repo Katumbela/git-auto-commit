@@ -29,6 +29,8 @@ function generateDiffMessage(file: string): string {
     }
 }
 
+
+
 function run() {
     try {
         process.chdir(path.resolve(targetDir));
