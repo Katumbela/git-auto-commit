@@ -9,8 +9,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/cli.js",
-    "prepublishOnly": "npm run build",
+    "start": "node dist/cli.js", 
     "prepublish": "npm run build",
     "test": "jest"
   },

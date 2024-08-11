@@ -14,13 +14,14 @@ function getCommitType(status: string): string {
     return 'chore';
 }
 
+
 function generateDiffMessage(file: string): string {
     try {
         const diff = execSync(`git diff ${file}`).toString().trim();
         const changes = diff.split('\n')
             .filter(line => line.startsWith('+') && !line.startsWith('+++'))
             .map(line => line.replace(/^\+/, ''))
-            .join(', ')
+            .join(' ')
             .slice(0, 100); // Limita a 100 caracteres, ajuste conforme necessário
         return changes ? `Alterações: ${changes}` : 'Pequenas alterações';
     } catch {
