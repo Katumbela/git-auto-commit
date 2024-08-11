@@ -108,7 +108,7 @@ function run() {
     try {
         process.chdir(path.resolve(targetDir));
 
-        let count = 1;
+        //  let count = 1;
         let pushAfterCommit = false;
 
         const args = argv.slice(2);
