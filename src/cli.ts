@@ -13,7 +13,6 @@ function getCommitType(status: string): string {
     return 'chore';
 }
 
-
 function generateMessageFromDiff(diff: string, file: string): string {
     if (/function\s+(\w+)/.test(diff)) {
         const functionName = diff.match(/function\s+(\w+)/)?.[1];
