@@ -17,19 +17,22 @@ function getCommitType(status) {
         return 'chore';
     return 'chore';
 }
-function generateDiffMessage(file) {
-    try {
-        const diff = (0, child_process_1.execSync)(`git diff ${file}`).toString().trim();
-        const changes = diff.split('\n')
-            .filter(line => line.startsWith('+') && !line.startsWith('+++'))
-            .map(line => line.replace(/^\+/, ''))
-            .join(' ')
-            .slice(0, 100); // Limita a 100 caracteres, ajuste conforme necessário
-        return changes ? `Alterações: ${changes}` : 'Pequenas alterações';
+function generateMessageFromDiff(diff) {
+    var _a;
+    if (/function\s+(\w+)/.test(diff)) {
+        const functionName = (_a = diff.match(/function\s+(\w+)/)) === null || _a === void 0 ? void 0 : _a[1];
+        return `Criação da função ${functionName}`;
     }
-    catch (_a) {
-        return 'Alterações não visualizadas';
+    if (/<button/.test(diff)) {
+        return `Criação de um botão`;
     }
+    if (/<img/.test(diff)) {
+        return `Criação de uma imagem`;
+    }
+    if (/background-color|color|font-size/.test(diff)) {
+        return `Estilização de CSS`;
+    }
+    return `Pequenas alterações ou refatoração`;
 }
 function run() {
     try {
@@ -44,10 +47,11 @@ function run() {
                 const [status, file] = [line.slice(0, 2).trim(), line.slice(3)];
                 const commitType = getCommitType(status);
                 if (file) {
-                    const diffMessage = generateDiffMessage(file);
+                    const diff = (0, child_process_1.execSync)(`git diff ${file}`).toString().trim();
+                    const message = generateMessageFromDiff(diff);
                     console.log(`📁 Adicionando arquivo ${file}`);
                     (0, child_process_1.execSync)(`git add "${file}"`);
-                    (0, child_process_1.execSync)(`git commit -m "${commitType}: commit ${count++} - ${file}. ${diffMessage}"`);
+                    (0, child_process_1.execSync)(`git commit -m "${commitType}: commit ${count++} - ${file}. ${message}"`);
                     console.log(`✅ Arquivo ${file} commitado com sucesso.`);
                 }
             });
@@ -62,17 +66,18 @@ function run() {
                 if (file) {
                     console.log(`📁 Adicionando ficheiro não rastreado ${file}`);
                     (0, child_process_1.execSync)(`git add "${file}"`);
-                    (0, child_process_1.execSync)(`git commit -m "feat: commit ${count++} - ${file}"`);
+                    (0, child_process_1.execSync)(`git commit -m "feat: commit ${count++} - ${file}. Criação de novo arquivo"`);
                     console.log(`✅ Ficheiro não rastreado commitado ${file}`);
                 }
             });
             const modifiedFiles = (0, child_process_1.execSync)('git diff --name-only').toString().trim().split('\n');
             modifiedFiles.forEach(file => {
                 if (file) {
-                    const diffMessage = generateDiffMessage(file);
+                    const diff = (0, child_process_1.execSync)(`git diff ${file}`).toString().trim();
+                    const message = generateMessageFromDiff(diff);
                     console.log(`📝 Adicionando ficheiro modificado ${file}`);
                     (0, child_process_1.execSync)(`git add "${file}"`);
-                    (0, child_process_1.execSync)(`git commit -m "fix: commit ${count++} - ${file}. ${diffMessage}"`);
+                    (0, child_process_1.execSync)(`git commit -m "fix: commit ${count++} - ${file}. ${message}"`);
                     console.log(`✅ Ficheiro modificado commitado ${file}`);
                 }
             });
