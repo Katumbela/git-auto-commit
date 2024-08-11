@@ -18,18 +18,18 @@ function generateMessageFromDiff(diff: string, file: string): string {
     const messages: string[] = [];
 
     // Detecção de adição de função
-    if (/^\+?\s*function\s+(\w+)/.test(diff)) {
+    if  (/function\s+(\w+)/.test(diff)) {
         const functionName = diff.match(/function\s+(\w+)/)?.[1];
         messages.push(`Criação da função ${functionName} em ${file}`);
     }
 
     // Detecção de criação de botão
-    if (/^\+?\s*<button/.test(diff)) {
+    if  (/<button/.test(diff)) {
         messages.push(`Criação de um botão em ${file}`);
     }
 
     // Detecção de criação de imagem
-    if (/^\+?\s*<img/.test(diff)) {
+    if (/<img/.test(diff)) {
         messages.push(`Criação de uma imagem em ${file}`);
     }
 
