@@ -13,97 +13,22 @@ function getCommitType(status: string): string {
     return 'chore';
 }
 
-function generateMessageFromDiff(diff: string, file: string): string {
+function generateMessageFromDiff(diff: string): string {
     if (/function\s+(\w+)/.test(diff)) {
         const functionName = diff.match(/function\s+(\w+)/)?.[1];
         return `Criação da função ${functionName}`;
     }
     if (/<button/.test(diff)) {
-        return `Criação de um botão no arquivo ${file}`;
+        return `Criação de um botão`;
     }
     if (/<img/.test(diff)) {
-        return `Criação de uma imagem no arquivo ${file}`;
+        return `Criação de uma imagem`;
     }
     if (/background-color|color|font-size/.test(diff)) {
-        return `Estilização de CSS no arquivo ${file}`;
+        return `Estilização de CSS`;
     }
-    if (/^\s*\/\/\s/.test(diff)) {
-        return `Adição de um comentário no arquivo ${file}`;
-    }
-    if (/console\.log/.test(diff)) {
-        return `Adição de log no console no arquivo ${file}`;
-    }
-    if (/\+\s*import/.test(diff)) {
-        return `Adição de importação no arquivo ${file}`;
-    }
-    if (/document\.querySelector|document\.getElementById/.test(diff)) {
-        return `Manipulação de DOM no arquivo ${file}`;
-    }
-    if (/\+/.test(diff) && !/-/.test(diff)) {
-        return `Adição de código no arquivo ${file}`;
-    }
-    if (/-/.test(diff) && !/\+/.test(diff)) {
-        return `Remoção de código no arquivo ${file}`;
-    }
-    if (/\+/.test(diff) && /-/.test(diff)) {
-        return `Modificação de código no arquivo ${file}`;
-    }
-    if (/^\s+$/.test(diff)) {
-        return `Alteração de espaço ou linhas em branco no arquivo ${file}`;
-    }
-    if (/text/.test(diff)) {
-        return `Alteração de texto no arquivo ${file}`;
-    }
-    if (/const\s+\w+\s*=/.test(diff)) {
-        return `Criação de uma constante no arquivo ${file}`;
-    }
-    if (/let\s+\w+\s*=|var\s+\w+\s*=/.test(diff)) {
-        return `Criação de uma variável no arquivo ${file}`;
-    }
-    if (/React\.Component|function\s+\w+\(.*\)\s*{/.test(diff)) {
-        return `Alteração em componente React no arquivo ${file}`;
-    }
-    if (/^import\s+\w+/.test(diff)) {
-        return `Adição de novo import no arquivo ${file}`;
-    }
-    if (/>\s*\w+.*<\/\w+>/.test(diff)) {
-        return `Mudança de texto em um elemento HTML no arquivo ${file}`;
-    }
-    if (/^\s*(public|private|protected)?\s*\w+\s*\(.*\)\s*{/.test(diff)) {
-        return `Criação de um novo método de classe no arquivo ${file}`;
-    }
-    if (/style=\{[^}]+\}/.test(diff)) {
-        return `Adição de um novo estilo inline no arquivo ${file}`;
-    }
-    if (status === 'A') {
-        return `Criação de um novo arquivo ${file}`;
-    }
-    if (/^-/.test(diff)) {
-        return `Remoção de linhas de código no arquivo ${file}`;
-    }
-    if (/^<\w+/.test(diff)) {
-        return `Criação de um novo elemento HTML no arquivo ${file}`;
-    }
-    if (/^mv\s+/.test(diff)) {
-        return `Mudança na estrutura de pastas no arquivo ${file}`;
-    }
-    if (/addEventListener|onClick|onChange/.test(diff)) {
-        return `Alteração em funções de manipulação de eventos no arquivo ${file}`;
-    }
-    if (/\w+\s*=\s*\[.*\]|\w+\s*=\s*{.*}/.test(diff)) {
-        return `Alteração de conteúdo em um array ou objeto no arquivo ${file}`;
-    }
-    if (/describe\(|it\(|test\(/.test(diff)) {
-        return `Criação de testes unitários no arquivo ${file}`;
-    }
-
-
-
-
-
-    return `Alterações gerais ou refatoração no arquivo ${file}`;
+    return `Pequenas alterações ou refatoração`;
 }
-
 
 function run() {
     try {
@@ -121,10 +46,10 @@ function run() {
                 const commitType = getCommitType(status);
                 if (file) {
                     const diff = execSync(`git diff ${file}`).toString().trim();
-                    const message = generateMessageFromDiff(diff, file);
+                    const message = generateMessageFromDiff(diff);
                     console.log(`📁 Adicionando arquivo ${file}`);
                     execSync(`git add "${file}"`);
-                    execSync(`git commit -m "${commitType}: ${file}. ${message}"`);
+                    execSync(`git commit -m "${commitType}: count++} - ${file}. ${message}"`);
                     console.log(`✅ Arquivo ${file} commitado com sucesso.`);
                 }
             });
@@ -149,7 +74,7 @@ function run() {
             modifiedFiles.forEach(file => {
                 if (file) {
                     const diff = execSync(`git diff ${file}`).toString().trim();
-                    const message = generateMessageFromDiff(diff, file);
+                    const message = generateMessageFromDiff(diff);
                     console.log(`📝 Adicionando ficheiro modificado ${file}`);
                     execSync(`git add "${file}"`);
                     //execSync(`git commit -m "fix: commit ${count++} - ${file}. ${message}"`);
