@@ -21,16 +21,16 @@ function generateMessageFromDiff(diff, file) {
     var _a;
     const messages = [];
     // Detecção de adição de função
-    if (/^\+?\s*function\s+(\w+)/.test(diff)) {
+    if (/function\s+(\w+)/.test(diff)) {
         const functionName = (_a = diff.match(/function\s+(\w+)/)) === null || _a === void 0 ? void 0 : _a[1];
         messages.push(`Criação da função ${functionName} em ${file}`);
     }
     // Detecção de criação de botão
-    if (/^\+?\s*<button/.test(diff)) {
+    if (/<button/.test(diff)) {
         messages.push(`Criação de um botão em ${file}`);
     }
     // Detecção de criação de imagem
-    if (/^\+?\s*<img/.test(diff)) {
+    if (/<img/.test(diff)) {
         messages.push(`Criação de uma imagem em ${file}`);
     }
     return messages.join('; ');
