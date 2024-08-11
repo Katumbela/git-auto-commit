@@ -51,7 +51,7 @@ function run() {
                     const message = generateMessageFromDiff(diff);
                     console.log(`📁 Adicionando arquivo ${file}`);
                     (0, child_process_1.execSync)(`git add "${file}"`);
-                    (0, child_process_1.execSync)(`git commit -m "${commitType}: commit ${count++} - ${file}. ${message}"`);
+                    (0, child_process_1.execSync)(`git commit -m "${commitType}: ${file}. ${message}"`);
                     console.log(`✅ Arquivo ${file} commitado com sucesso.`);
                 }
             });
@@ -66,7 +66,8 @@ function run() {
                 if (file) {
                     console.log(`📁 Adicionando ficheiro não rastreado ${file}`);
                     (0, child_process_1.execSync)(`git add "${file}"`);
-                    (0, child_process_1.execSync)(`git commit -m "feat: commit ${count++} - ${file}. Criação de novo arquivo"`);
+                    // execSync(`git commit -m "feat: commit ${count++} - ${file}. Criação de novo arquivo"`);
+                    (0, child_process_1.execSync)(`git commit -m "feat: ${file}. Criação de novo arquivo"`);
                     console.log(`✅ Ficheiro não rastreado commitado ${file}`);
                 }
             });
@@ -77,7 +78,8 @@ function run() {
                     const message = generateMessageFromDiff(diff);
                     console.log(`📝 Adicionando ficheiro modificado ${file}`);
                     (0, child_process_1.execSync)(`git add "${file}"`);
-                    (0, child_process_1.execSync)(`git commit -m "fix: commit ${count++} - ${file}. ${message}"`);
+                    //execSync(`git commit -m "fix: commit ${count++} - ${file}. ${message}"`);
+                    (0, child_process_1.execSync)(`git commit -m "fix: ${file}. ${message}"`);
                     console.log(`✅ Ficheiro modificado commitado ${file}`);
                 }
             });
