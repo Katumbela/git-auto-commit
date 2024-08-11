@@ -13,40 +13,21 @@ function getCommitType(status: string): string {
     return 'chore';
 }
 
-function ge54tSt() {
-    return true
-}
-function ge4tSt() {
-    return true
-}
-function getS2t() {
-    return true
-}
-function getSt1() {
-    return true
-}
-function gedftSt() {
-    return true
-}
-function gefghtSt() {
-    return true
-}
-function getSt() {
-    return true
-}
-
-function generateDiffMessage(file: string): string {
-    try {
-        const diff = execSync(`git diff ${file}`).toString().trim();
-        const changes = diff.split('\n')
-            .filter(line => line.startsWith('+') && !line.startsWith('+++'))
-            .map(line => line.replace(/^\+/, ''))
-            .join(' ')
-            .slice(0, 100); // Limita a 100 caracteres, ajuste conforme necessário
-        return changes ? `Alterações: ${changes}` : 'Pequenas alterações';
-    } catch {
-        return 'Alterações não visualizadas';
+function generateMessageFromDiff(diff: string): string {
+    if (/function\s+(\w+)/.test(diff)) {
+        const functionName = diff.match(/function\s+(\w+)/)?.[1];
+        return `Criação da função ${functionName}`;
     }
+    if (/<button/.test(diff)) {
+        return `Criação de um botão`;
+    }
+    if (/<img/.test(diff)) {
+        return `Criação de uma imagem`;
+    }
+    if (/background-color|color|font-size/.test(diff)) {
+        return `Estilização de CSS`;
+    }
+    return `Pequenas alterações ou refatoração`;
 }
 
 function run() {
@@ -64,10 +45,11 @@ function run() {
                 const [status, file] = [line.slice(0, 2).trim(), line.slice(3)];
                 const commitType = getCommitType(status);
                 if (file) {
-                    const diffMessage = generateDiffMessage(file);
+                    const diff = execSync(`git diff ${file}`).toString().trim();
+                    const message = generateMessageFromDiff(diff);
                     console.log(`📁 Adicionando arquivo ${file}`);
                     execSync(`git add "${file}"`);
-                    execSync(`git commit -m "${commitType}: commit ${count++} - ${file}. ${diffMessage}"`);
+                    execSync(`git commit -m "${commitType}: commit ${count++} - ${file}. ${message}"`);
                     console.log(`✅ Arquivo ${file} commitado com sucesso.`);
                 }
             });
@@ -82,7 +64,7 @@ function run() {
                 if (file) {
                     console.log(`📁 Adicionando ficheiro não rastreado ${file}`);
                     execSync(`git add "${file}"`);
-                    execSync(`git commit -m "feat: commit ${count++} - ${file}"`);
+                    execSync(`git commit -m "feat: commit ${count++} - ${file}. Criação de novo arquivo"`);
                     console.log(`✅ Ficheiro não rastreado commitado ${file}`);
                 }
             });
@@ -90,10 +72,11 @@ function run() {
             const modifiedFiles = execSync('git diff --name-only').toString().trim().split('\n');
             modifiedFiles.forEach(file => {
                 if (file) {
-                    const diffMessage = generateDiffMessage(file);
+                    const diff = execSync(`git diff ${file}`).toString().trim();
+                    const message = generateMessageFromDiff(diff);
                     console.log(`📝 Adicionando ficheiro modificado ${file}`);
                     execSync(`git add "${file}"`);
-                    execSync(`git commit -m "fix: commit ${count++} - ${file}. ${diffMessage}"`);
+                    execSync(`git commit -m "fix: commit ${count++} - ${file}. ${message}"`);
                     console.log(`✅ Ficheiro modificado commitado ${file}`);
                 }
             });
