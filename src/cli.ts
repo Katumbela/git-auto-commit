@@ -100,12 +100,9 @@ function generateMessageFromDiff(diff: string, file: string): string {
         }
 
 
-
-
-
         return `Alterações gerais ou refatoração no arquivo ${file}`;
     }
-    
+
     const messages: string[] = [];
 
     // Detecção de adição de função
