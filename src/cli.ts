@@ -3,7 +3,6 @@
 import { execSync } from 'child_process';
 import path from 'path';
 import { argv } from 'process';
-import fs from 'fs';
 
 const targetDir = '.';
 
@@ -13,7 +12,6 @@ function getCommitType(status: string): string {
     if (status === 'D') return 'chore';
     return 'chore';
 }
-
 
 function generateDiffMessage(file: string): string {
     try {
@@ -28,8 +26,6 @@ function generateDiffMessage(file: string): string {
         return 'Alterações não visualizadas';
     }
 }
-
-
 
 function run() {
     try {
