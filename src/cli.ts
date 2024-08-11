@@ -155,7 +155,6 @@ function generateMessageFromDiff(diff: string, file: string): string {
     return messages.join('; ');
 }
 
-
 function run() {
     try {
         process.chdir(path.resolve(targetDir));
