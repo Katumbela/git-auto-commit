@@ -1,6 +1,6 @@
 {
   "name": "git-commit-lib",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "A library to add and commit files in a Git repository.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
