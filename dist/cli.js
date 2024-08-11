@@ -18,20 +18,130 @@ function getCommitType(status) {
     return 'chore';
 }
 function generateMessageFromDiff(diff, file) {
-    var _a;
+    var _a, _b;
     const messages = [];
     // Detecção de adição de função
     if (/function\s+(\w+)/.test(diff)) {
         const functionName = (_a = diff.match(/function\s+(\w+)/)) === null || _a === void 0 ? void 0 : _a[1];
         messages.push(`Criação da função ${functionName} em ${file}`);
     }
+    // Detecção de remoção de função
+    if (/function\s+(\w+)/.test(diff) && diff.startsWith('-')) {
+        const functionName = (_b = diff.match(/function\s+(\w+)/)) === null || _b === void 0 ? void 0 : _b[1];
+        messages.push(`Remoção da função ${functionName} em ${file}`);
+    }
     // Detecção de criação de botão
     if (/<button/.test(diff)) {
         messages.push(`Criação de um botão em ${file}`);
     }
+    // Detecção de remoção de botão
+    if (/<button/.test(diff) && diff.startsWith('-')) {
+        messages.push(`Remoção de um botão em ${file}`);
+    }
     // Detecção de criação de imagem
     if (/<img/.test(diff)) {
         messages.push(`Criação de uma imagem em ${file}`);
+    }
+    // Detecção de remoção de imagem
+    if (/<img/.test(diff) && diff.startsWith('-')) {
+        messages.push(`Remoção de uma imagem em ${file}`);
+    }
+    // Detecção de estilização CSS
+    if (/background-color|color|font-size/.test(diff)) {
+        messages.push(`Estilização de CSS em ${file}`);
+    }
+    // Detecção de remoção de estilização CSS
+    if (/background-color|color|font-size/.test(diff) && diff.startsWith('-')) {
+        messages.push(`Remoção de estilização CSS em ${file}`);
+    }
+    // Detecção de adição de comentário
+    if (/^\s*\/\/\s/.test(diff)) {
+        messages.push(`Adição de um comentário em ${file}`);
+    }
+    // Detecção de adição de log no console
+    if (/console\.log/.test(diff)) {
+        messages.push(`Adição de log no console em ${file}`);
+    }
+    // Detecção de adição de importação
+    if (/^\s*import/.test(diff)) {
+        messages.push(`Adição de importação em ${file}`);
+    }
+    // Detecção de manipulação de DOM
+    if (/document\.querySelector|document\.getElementById/.test(diff)) {
+        messages.push(`Manipulação de DOM em ${file}`);
+    }
+    // Detecção de adição ou remoção de código
+    if (/\+\s/.test(diff) && !/-/.test(diff)) {
+        messages.push(`Adição de código em ${file}`);
+    }
+    if (/\-\s/.test(diff) && !/\+/.test(diff)) {
+        messages.push(`Remoção de código em ${file}`);
+    }
+    if (/\+\s/.test(diff) && /\-\s/.test(diff)) {
+        messages.push(`Modificação de código em ${file}`);
+    }
+    // Detecção de alteração de espaços ou linhas em branco
+    if (/^\s+$/.test(diff)) {
+        messages.push(`Alteração de espaço ou linhas em branco em ${file}`);
+    }
+    // Detecção de alteração de texto
+    if (/text/.test(diff)) {
+        messages.push(`Alteração de texto em ${file}`);
+    }
+    // Detecção de criação de constante ou variável
+    if (/const\s+\w+\s*=/.test(diff)) {
+        messages.push(`Criação de uma constante em ${file}`);
+    }
+    if (/let\s+\w+\s*=|var\s+\w+\s*=/.test(diff)) {
+        messages.push(`Criação de uma variável em ${file}`);
+    }
+    // Detecção de alteração em componente React
+    if (/React\.Component|function\s+\w+\(.*\)\s*{/.test(diff)) {
+        messages.push(`Alteração em componente React em ${file}`);
+    }
+    // Detecção de adição de novo import
+    if (/^import\s+\w+/.test(diff)) {
+        messages.push(`Adição de novo import em ${file}`);
+    }
+    // Detecção de mudança de texto em elemento HTML
+    if (/>.*<\/\w+>/.test(diff)) {
+        messages.push(`Mudança de texto em um elemento HTML em ${file}`);
+    }
+    // Detecção de criação de método de classe
+    if (/^\s*(public|private|protected)?\s*\w+\s*\(.*\)\s*{/.test(diff)) {
+        messages.push(`Criação de um novo método de classe em ${file}`);
+    }
+    // Detecção de adição de estilo inline
+    if (/style=\{[^}]+\}/.test(diff)) {
+        messages.push(`Adição de um novo estilo inline em ${file}`);
+    }
+    // Detecção de criação de novo arquivo
+    if (diff.startsWith('A ')) {
+        messages.push(`Criação de um novo arquivo ${file}`);
+    }
+    // Detecção de remoção de linhas de código
+    if (diff.startsWith('-')) {
+        messages.push(`Remoção de linhas de código em ${file}`);
+    }
+    // Detecção de criação de novo elemento HTML
+    if (/^<\w+/.test(diff)) {
+        messages.push(`Criação de um novo elemento HTML em ${file}`);
+    }
+    // Detecção de mudança na estrutura de pastas
+    if (diff.startsWith('mv ')) {
+        messages.push(`Mudança na estrutura de pastas em ${file}`);
+    }
+    // Detecção de alteração em funções de manipulação de eventos
+    if (/addEventListener|onClick|onChange/.test(diff)) {
+        messages.push(`Alteração em funções de manipulação de eventos em ${file}`);
+    }
+    // Detecção de alteração de conteúdo em array ou objeto
+    if (/\w+\s*=\s*\[.*\]|\w+\s*=\s*{.*}/.test(diff)) {
+        messages.push(`Alteração de conteúdo em array ou objeto em ${file}`);
+    }
+    // Detecção de criação de testes unitários
+    if (/describe\(|it\(|test\(/.test(diff)) {
+        messages.push(`Criação de testes unitários em ${file}`);
     }
     return messages.join('; ');
 }
