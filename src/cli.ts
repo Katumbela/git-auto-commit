@@ -13,6 +13,10 @@ function getCommitType(status: string): string {
     return 'chore';
 }
 
+function getSt() {
+    return true
+}
+
 function generateDiffMessage(file: string): string {
     try {
         const diff = execSync(`git diff ${file}`).toString().trim();
