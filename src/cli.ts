@@ -148,9 +148,9 @@ function generateMessageFromDiff(diff: string, file: string): string {
     }
 
     // Se não houver mensagens específicas, considera como alterações gerais ou refatoração
-    if (messages.length === 0) {
+   /* if (messages.length === 0) {
         messages.push(`Alterações gerais ou refatoração no arquivo ${file}`);
-    }
+    }*/
 
     return messages.join('; ');
 }
