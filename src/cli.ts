@@ -3,8 +3,10 @@
 import { execSync } from 'child_process';
 import path from 'path';
 import { argv } from 'process';
+import { pipeline } from '@xenova/transformers';
 
 const targetDir = '.';
+let model: any = null;
 
 function getCommitType(status: string): string {
     if (status === 'A') return 'feat';
@@ -12,7 +14,6 @@ function getCommitType(status: string): string {
     if (status === 'D') return 'chore';
     return 'chore';
 }
-
 
 function generateMessageFromDiff(diff: string, file: string): string {
     const messages: string[] = [];
@@ -171,68 +172,120 @@ function generateMessageFromDiff(diff: string, file: string): string {
     return messages.join('; ');
 }
 
+async function initializeModel() {
+    if (!model) {
+        console.log('🔄 Initializing AI model...');
+        model = await pipeline('text-generation', 'Xenova/distilgpt2');
+        console.log('✅ AI model initialized');
+    }
+    return model;
+}
 
-function run() {
+async function generateMessageWithAI(diff: string, file: string): Promise<string> {
+    try {
+        const model = await initializeModel();
+        const prompt = `Generate a conventional commit message for these changes in ${file}:\n${diff}\n\nCommit message:`;
+        
+        const result = await model(prompt, {
+            max_length: 100,
+            temperature: 0.7,
+            top_p: 0.9,
+            repetition_penalty: 1.2
+        });
+
+        let message = result[0].generated_text
+            .replace(prompt, '')
+            .trim()
+            .split('\n')[0];
+
+        if (!message.match(/^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?:/)) {
+            message = `feat: ${message}`;
+        }
+
+        return message;
+    } catch (error) {
+        console.error('Error generating commit message:', error);
+        return `Update ${file}`;
+    }
+}
+
+async function run() {
     try {
         process.chdir(path.resolve(targetDir));
 
-        let count = 1;
         let pushAfterCommit = false;
-
         const args = argv.slice(2);
-        if (args.includes('--all') || args.includes('-a')) {
-            console.log('📦 Comitando todos os arquivos de uma vez.');
-            const allFiles = execSync('git status --porcelain').toString().trim().split('\n');
-            allFiles.forEach(line => {
-                const [status, file] = [line.slice(0, 2).trim(), line.slice(3)];
-                const commitType = getCommitType(status);
-                if (file) {
-                    const diff = execSync(`git diff ${file}`).toString().trim();
-                    const message = generateMessageFromDiff(diff, file);
-                    console.log(`📁 Adicionando arquivo ${file}`);
-                    execSync(`git add "${file}"`);
-                    execSync(`git commit -m "${commitType}: count++} - ${file}. ${message}"`);
-                    console.log(`✅ Arquivo ${file} commitado com sucesso.`);
+        
+        if (args.includes('--push') || args.includes('-p')) {
+            pushAfterCommit = true;
+        }
+
+        // Get all changed files
+        const statusOutput = execSync('git status --porcelain').toString().trim();
+        if (!statusOutput) {
+            console.log('No changes to commit.');
+            return;
+        }
+
+        const files = statusOutput.split('\n').map(line => {
+            const [status, file] = [line.slice(0, 2).trim(), line.slice(3).trim()];
+            return { status, file };
+        }).filter(({ file }) => file);
+
+        // Group files by status
+        const groups: { [key: string]: string[] } = {};
+        files.forEach(({ status, file }) => {
+            const commitType = getCommitType(status);
+            if (!groups[commitType]) groups[commitType] = [];
+            groups[commitType].push(file);
+        });
+
+        // Process each group
+        for (const [commitType, fileList] of Object.entries(groups)) {
+            if (fileList.length === 0) continue;
+
+            // Get diff for all files in group
+            const diffs = fileList.map(file => {
+                try {
+                    return execSync(`git diff -- "${file}"`).toString().trim();
+                } catch (error) {
+                    return ''; // File might be new or deleted
                 }
-            });
-            console.log('✅ Todos os arquivos foram commitados.');
-        } else {
-            if (args.includes('--push') || args.includes('-p')) {
-                pushAfterCommit = true;
+            }).filter(diff => diff).join('\n');
+
+            if (diffs) {
+                const message = await generateMessageWithAI(diffs, fileList.join(', '));
+                console.log(`📁 Processing files: ${fileList.join(', ')}`);
+                
+                // Add and commit files
+                fileList.forEach(file => {
+                    try {
+                        execSync(`git add "${file}"`);
+                    } catch (error) {
+                        console.error(`Error adding file ${file}:`, error);
+                    }
+                });
+
+                try {
+                    execSync(`git commit -m "${commitType}: ${message}"`);
+                    console.log(`✅ Files committed successfully.`);
+                } catch (error) {
+                    console.error('Error committing files:', error);
+                }
             }
+        }
 
-            const untrackedFiles = execSync('git ls-files --others --exclude-standard').toString().trim().split('\n');
-            untrackedFiles.forEach(file => {
-                if (file) {
-                    console.log(`📁 Adicionando ficheiro não rastreado ${file}`);
-                    execSync(`git add "${file}"`);
-                    // execSync(`git commit -m "feat: commit ${count++} - ${file}. Criação de novo arquivo"`);
-                    execSync(`git commit -m "feat: ${file}. Criação de novo arquivo"`);
-                    console.log(`✅ Ficheiro não rastreado commitado ${file}`);
-                }
-            });
-
-            const modifiedFiles = execSync('git diff --name-only').toString().trim().split('\n');
-            modifiedFiles.forEach(file => {
-                if (file) {
-                    const diff = execSync(`git diff ${file}`).toString().trim();
-                    const message = generateMessageFromDiff(diff, file);
-                    console.log(`📝 Adicionando ficheiro modificado ${file}`);
-                    execSync(`git add "${file}"`);
-                    //execSync(`git commit -m "fix: commit ${count++} - ${file}. ${message}"`);
-                    execSync(`git commit -m "fix: ${file}. ${message}"`);
-                    console.log(`✅ Ficheiro modificado commitado ${file}`);
-                }
-            });
-
-            if (pushAfterCommit) {
-                console.log('🚀 Enviando alterações para o repositório remoto.');
+        if (pushAfterCommit) {
+            console.log('🚀 Pushing changes to remote repository...');
+            try {
                 execSync('git push');
-                console.log('✅ Alterações enviadas com sucesso.');
+                console.log('✅ Changes pushed successfully.');
+            } catch (error) {
+                console.error('Error pushing changes:', error);
             }
         }
     } catch (error) {
-        console.error('Erro ao executar seus commits:', (error as Error).message);
+        console.error('Error executing commits:', (error as Error).message);
     }
 }
 
